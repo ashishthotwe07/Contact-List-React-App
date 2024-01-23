@@ -11,12 +11,19 @@ const initialState = {
 
 export const getInitialState = createAsyncThunk(
   "todo/getInitialState",
-  (args, thunkAPI) => {
-    axios.get("https://jsonplaceholder.typicode.com/users").then((res) => {
-      console.log(res.data);
+  // (args, thunkAPI) => {
+  //   axios.get("https://jsonplaceholder.typicode.com/users").then((res) => {
+  //     console.log(res.data);
 
-      thunkAPI.dispatch(actions.setInitializeState(res.data));
-    });
+  //     thunkAPI.dispatch(actions.setInitializeState(res.data));
+  //   });
+  // }
+
+  async () => {
+    const response = await axios.get(
+      "https://jsonplaceholder.typicode.com/users"
+    );
+    return response.data;
   }
 );
 
@@ -64,6 +71,11 @@ const ContactSlice = createSlice({
 
       console.log(data, index);
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(getInitialState.fulfilled, (state, action) => {
+      state.contacts = [...action.payload];
+    });
   },
 });
 
