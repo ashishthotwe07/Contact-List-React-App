@@ -1,6 +1,7 @@
 // contactsReducers.js
 
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
 
 const initialState = {
   contacts: [
@@ -8,10 +9,39 @@ const initialState = {
   ],
 };
 
+export const getInitialState = createAsyncThunk(
+  "todo/getInitialState",
+  (args, thunkAPI) => {
+    axios.get("https://jsonplaceholder.typicode.com/users").then((res) => {
+      console.log(res.data);
+
+      thunkAPI.dispatch(actions.setInitializeState(res.data));
+    });
+  }
+);
+
+export const addContact = createAsyncThunk(
+  "contact/addContact",
+  (payload, thunkAPI) => {
+    fetch("https://jsonplaceholder.typicode.com/users", {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    })
+      .then((response) => response.json())
+      .then((json) => thunkAPI.dispatch(json));
+  }
+);
+
 const ContactSlice = createSlice({
   name: "contact",
   initialState,
   reducers: {
+    setInitializeState: (state, action) => {
+      state.contacts = [...action.payload];
+    },
     add: (state, action) => {
       state.contacts.push(action.payload);
     },

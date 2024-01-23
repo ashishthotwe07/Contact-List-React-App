@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../Styles/AddContactForm.css";
-import { actions } from "../redux/reducers/contactsReducers";
+import { actions, addContact } from "../redux/reducers/contactsReducers";
 import { useDispatch } from "react-redux";
 
 export default function AddContactForm({
@@ -29,9 +29,11 @@ export default function AddContactForm({
     // Dispatch the 'add' or 'edit' action with the contact object
     if (isEditForm) {
       // If it's an edit form, dispatch the 'edit' action with the updated data
+      
       dispatch(actions.edit({ index, data: formData }));
     } else {
       // If it's an add form, dispatch the 'add' action with the contact object
+      // dispatch(addContact(formData));
       dispatch(actions.add(formData));
     }
 
