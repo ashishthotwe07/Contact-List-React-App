@@ -29,16 +29,15 @@ export const getInitialState = createAsyncThunk(
 
 export const addContact = createAsyncThunk(
   "contact/addContact",
-  (payload, thunkAPI) => {
-    fetch("https://jsonplaceholder.typicode.com/users", {
+  async (payload) => {
+    const response = await fetch("https://jsonplaceholder.typicode.com/users", {
       method: "POST",
       body: JSON.stringify(payload),
       headers: {
         "Content-type": "application/json; charset=UTF-8",
       },
-    })
-      .then((response) => response.json())
-      .then((json) => thunkAPI.dispatch(json));
+    });
+    return response.json();
   }
 );
 
@@ -46,12 +45,6 @@ const ContactSlice = createSlice({
   name: "contact",
   initialState,
   reducers: {
-    setInitializeState: (state, action) => {
-      state.contacts = [...action.payload];
-    },
-    add: (state, action) => {
-      state.contacts.push(action.payload);
-    },
     delete: (state, action) => {
       const indexToDelete = action.payload;
       // Ensure the index is valid
@@ -75,6 +68,9 @@ const ContactSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(getInitialState.fulfilled, (state, action) => {
       state.contacts = [...action.payload];
+    });
+    builder.addCase(addContact.fulfilled, (state, action) => {
+      state.contacts.push(action.payload);
     });
   },
 });

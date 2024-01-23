@@ -29,12 +29,12 @@ export default function AddContactForm({
     // Dispatch the 'add' or 'edit' action with the contact object
     if (isEditForm) {
       // If it's an edit form, dispatch the 'edit' action with the updated data
-      
+
       dispatch(actions.edit({ index, data: formData }));
     } else {
       // If it's an add form, dispatch the 'add' action with the contact object
-      // dispatch(addContact(formData));
-      dispatch(actions.add(formData));
+      dispatch(addContact(formData));
+      // dispatch(actions.add(formData));
     }
 
     // Clear the form data after adding/editing the contact
