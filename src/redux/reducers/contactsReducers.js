@@ -8,22 +8,10 @@ const initialState = {
   ],
 };
 
-export const getInitialState = createAsyncThunk(
-  "contact/getInitialState",
-  (_, thunkAPI) => {
-    fetch("https://jsonplaceholder.typicode.com/posts/1")
-      .then((response) => response.json())
-      .then((json) => thunkAPI.dispatch(actions.setInitialState(json)));
-  }
-);
-
 const ContactSlice = createSlice({
   name: "contact",
   initialState,
   reducers: {
-    setInitialState: (state, action) => {
-      state.contacts = [...action.payload];
-    },
     add: (state, action) => {
       state.contacts.push(action.payload);
     },

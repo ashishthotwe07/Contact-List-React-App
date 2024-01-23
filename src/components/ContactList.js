@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import "../Styles/ContactList.css";
 import AddContactForm from "./AddContactForm";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   actions,
   contactSelector,
-  getInitialState,
 } from "../redux/reducers/contactsReducers";
 
 function ContactList() {
@@ -16,10 +15,7 @@ function ContactList() {
   const contacts = useSelector(contactSelector);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(getInitialState());
-  });
-
+ 
   const handleEdit = (index) => {
     setSelectedContactIndex(index);
     setEditContactModalOpen(true);
