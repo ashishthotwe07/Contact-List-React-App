@@ -1,49 +1,84 @@
-import React, { useEffect, useState } from "react";
+// ContactList.js
+
+import React, { useState, useEffect } from "react";
 import "../Styles/ContactList.css";
 import AddContactForm from "./AddContactForm";
 import { useDispatch, useSelector } from "react-redux";
-
 import {
-  actions,
   contactSelector,
   deleteContact,
   getInitialState,
 } from "../redux/reducers/contactsReducers";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-function ContactList() {
+export default function ContactList() {
   const [isAddContactModalOpen, setAddContactModalOpen] = useState(false);
   const [isEditContactModalOpen, setEditContactModalOpen] = useState(false);
   const [selectedContactIndex, setSelectedContactIndex] = useState(null);
   const contacts = useSelector(contactSelector);
+  const isLoadingDeleteInitial = Array(contacts.length).fill(false);
+  const [isLoadingDelete, setIsLoadingDelete] = useState(
+    isLoadingDeleteInitial
+  );
   const dispatch = useDispatch();
 
   useEffect(() => {
+    // Fetching initial state of contacts
     dispatch(getInitialState());
-  }, []);
+  }, [dispatch]);
 
   const handleEdit = (index) => {
+    // Opening the modal for editing a contact
     setSelectedContactIndex(index);
     setEditContactModalOpen(true);
   };
 
   const handleDelete = async (index) => {
-    dispatch(deleteContact(index));
+    // Handling the deletion of a contact
+    setIsLoadingDelete((prev) => {
+      const newLoadingState = [...prev];
+      newLoadingState[index] = true;
+      return newLoadingState;
+    });
+
+    try {
+      await dispatch(deleteContact(index));
+      // Displaying success notification on successful deletion
+      toast.success("Contact deleted successfully");
+    } catch (error) {
+      console.error("Error deleting contact:", error);
+      // Displaying error notification on deletion error
+      toast.error("Error deleting contact");
+    } finally {
+      setIsLoadingDelete((prev) => {
+        const newLoadingState = [...prev];
+        newLoadingState[index] = false;
+        return newLoadingState;
+      });
+    }
   };
 
   const openAddContactModal = () => {
+    // Opening the modal for adding a new contact
     setAddContactModalOpen(true);
   };
 
   const closeAddContactModal = () => {
+    // Closing the modal for adding a new contact
     setAddContactModalOpen(false);
   };
 
   const closeEditContactModal = () => {
+    // Closing the modal for editing a contact
     setEditContactModalOpen(false);
     setSelectedContactIndex(null);
   };
 
   const handleContactAdded = () => {
+    // Handling the event when a new contact is added
     closeAddContactModal();
   };
 
@@ -54,7 +89,6 @@ function ContactList() {
         <button onClick={openAddContactModal}>Add Contact</button>
       </div>
 
-      {/* AddContactForm as a modal */}
       {isAddContactModalOpen && (
         <div className="modal-overlay">
           <div className="modal">
@@ -102,8 +136,16 @@ function ContactList() {
             <button className="edit-btn" onClick={() => handleEdit(index)}>
               Edit
             </button>
-            <button className="delete-btn" onClick={() => handleDelete(index)}>
-              Delete
+            <button
+              className="delete-btn"
+              onClick={() => handleDelete(index)}
+              disabled={isLoadingDelete[index]}
+            >
+              {isLoadingDelete[index] ? (
+                <FontAwesomeIcon icon={faSpinner} spin />
+              ) : (
+                "Delete"
+              )}
             </button>
           </div>
         </div>
@@ -111,5 +153,3 @@ function ContactList() {
     </>
   );
 }
-
-export default ContactList;

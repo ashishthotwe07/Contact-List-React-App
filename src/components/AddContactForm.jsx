@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "../Styles/AddContactForm.css";
-import { actions, addContact } from "../redux/reducers/contactsReducers";
+import {  addContact, editContact } from "../redux/reducers/contactsReducers";
 import { useDispatch } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function AddContactForm({
   isAddContactModalOpen,
@@ -26,30 +30,32 @@ export default function AddContactForm({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     setLoading(true);
-
+  
     try {
-      // Dispatch the 'add' or 'edit' action with the contact object
       if (isEditForm) {
-        // If it's an edit form, dispatch the 'edit' action with the updated data
-        await dispatch(actions.edit({ index, data: formData }));
+        // dispatch(actions.edit({ index, data: formData }));
+        await dispatch(editContact({ index, data: formData }));
+        toast.success("Contact updated successfully");
       } else {
-        // If it's an add form, dispatch the 'add' action with the contact object
         await dispatch(addContact(formData));
+        toast.success("Contact added successfully");
       }
-
+  
       // Clear the form data after adding/editing the contact
       setFormData({ name: "", email: "", phone: "" });
-
+  
       // Call the callback to close the modal
       onContactAdded();
     } catch (error) {
       console.error("Error adding/editing contact:", error);
+      toast.error("Error adding/editing contact");
     } finally {
       setLoading(false);
     }
   };
+  
 
   const handleChange = (e) => {
     // Update the form data as the user types
@@ -59,6 +65,7 @@ export default function AddContactForm({
   return (
     <div className="add-contact-form">
       <h3>{isEditForm ? "Edit Contact" : "Add Contact"}</h3>
+      <button >close</button>
       <form onSubmit={handleSubmit}>
         <label htmlFor="name">Name:</label>
         <input
@@ -91,7 +98,16 @@ export default function AddContactForm({
         />
 
         <button type="submit" disabled={loading}>
-          {loading ? "Adding..." : isEditForm ? "Edit" : "Add"}
+          {loading ? (
+            <>
+              <FontAwesomeIcon icon={faSpinner} spin />{" "}
+              {isEditForm ? "Updating..." : "Adding..."}
+            </>
+          ) : isEditForm ? (
+            "Edit"
+          ) : (
+            "Add"
+          )}
         </button>
       </form>
     </div>

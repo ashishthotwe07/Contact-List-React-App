@@ -16,6 +16,7 @@
   form {
     display: flex;
     flex-direction: column;
+    position:relative;
   }
   
   label {
@@ -41,3 +42,8 @@
     background-color: #45a049;
   }
   
+  .close-modal{
+    position: absolute;
+    top: 100px;
+    right: 510px;
+  }
