@@ -65,7 +65,7 @@ export default function AddContactForm({
   return (
     <div className="add-contact-form">
       <h3>{isEditForm ? "Edit Contact" : "Add Contact"}</h3>
-      <button >close</button>
+      
       <form onSubmit={handleSubmit}>
         <label htmlFor="name">Name:</label>
         <input
