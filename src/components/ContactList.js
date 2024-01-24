@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   actions,
   contactSelector,
+  deleteContact,
   getInitialState,
 } from "../redux/reducers/contactsReducers";
 
@@ -25,8 +26,8 @@ function ContactList() {
     setEditContactModalOpen(true);
   };
 
-  const handleDelete = (index) => {
-    dispatch(actions.delete(index));
+  const handleDelete = async (index) => {
+    dispatch(deleteContact(index));
   };
 
   const openAddContactModal = () => {

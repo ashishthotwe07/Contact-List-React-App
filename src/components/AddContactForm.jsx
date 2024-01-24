@@ -16,6 +16,7 @@ export default function AddContactForm({
     email: "",
     phone: "",
   });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (isEditForm && initialData) {
@@ -23,25 +24,31 @@ export default function AddContactForm({
     }
   }, [isEditForm, initialData]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Dispatch the 'add' or 'edit' action with the contact object
-    if (isEditForm) {
-      // If it's an edit form, dispatch the 'edit' action with the updated data
+    setLoading(true);
 
-      dispatch(actions.edit({ index, data: formData }));
-    } else {
-      // If it's an add form, dispatch the 'add' action with the contact object
-      dispatch(addContact(formData));
-      // dispatch(actions.add(formData));
+    try {
+      // Dispatch the 'add' or 'edit' action with the contact object
+      if (isEditForm) {
+        // If it's an edit form, dispatch the 'edit' action with the updated data
+        await dispatch(actions.edit({ index, data: formData }));
+      } else {
+        // If it's an add form, dispatch the 'add' action with the contact object
+        await dispatch(addContact(formData));
+      }
+
+      // Clear the form data after adding/editing the contact
+      setFormData({ name: "", email: "", phone: "" });
+
+      // Call the callback to close the modal
+      onContactAdded();
+    } catch (error) {
+      console.error("Error adding/editing contact:", error);
+    } finally {
+      setLoading(false);
     }
-
-    // Clear the form data after adding/editing the contact
-    setFormData({ name: "", email: "", phone: "" });
-
-    // Call the callback to close the modal
-    onContactAdded();
   };
 
   const handleChange = (e) => {
@@ -83,7 +90,9 @@ export default function AddContactForm({
           onChange={handleChange}
         />
 
-        <button type="submit">{isEditForm ? "Edit" : "Add"}</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Adding..." : isEditForm ? "Edit" : "Add"}
+        </button>
       </form>
     </div>
   );

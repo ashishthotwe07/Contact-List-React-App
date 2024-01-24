@@ -41,6 +41,17 @@ export const addContact = createAsyncThunk(
   }
 );
 
+export const deleteContact = createAsyncThunk(
+  "contact/deleteContact",
+  async (index) => {
+    await fetch(`https://jsonplaceholder.typicode.com/users/${index}`, {
+      method: "DELETE",
+    });
+    return index; // Return the index of the deleted contact
+  }
+);
+
+
 const ContactSlice = createSlice({
   name: "contact",
   initialState,
@@ -72,6 +83,15 @@ const ContactSlice = createSlice({
     builder.addCase(addContact.fulfilled, (state, action) => {
       state.contacts.push(action.payload);
     });
+    builder.addCase(deleteContact.fulfilled, (state, action) => {
+      const indexToDelete = action.payload;
+      // Ensure the index is valid
+      if (indexToDelete >= 0 && indexToDelete < state.contacts.length) {
+        // Use splice to remove the contact at the specified index
+        state.contacts.splice(indexToDelete, 1);
+      }
+    });
+    
   },
 });
 
